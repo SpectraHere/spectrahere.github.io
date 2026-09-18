@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First Website</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f3f2ed;
+    --ink: #21231e;
+    --ink-soft: #55584f;
+    --accent: #3e6259;
+    --accent-soft: #dde6e0;
+    --rule: #d8d6cd;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 6rem 1.5rem 4rem;
+  }
+
+  h1, h2 {
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 500;
+    margin: 0 0 0.5rem;
+    color: var(--ink);
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 3.4rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-top: 0;
+  }
+
+  .lede {
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 34ch;
+    margin: 1.2rem 0 0;
+  }
+
+  section {
+    margin-top: 3.5rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  section:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  p {
+    color: var(--ink-soft);
+    max-width: 58ch;
+  }
+
+  code {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  ul.tries {
+    padding: 0;
+    margin: 1.5rem 0 0;
+    list-style: none;
+  }
+
+  ul.tries li {
+    position: relative;
+    padding-left: 1.6rem;
+    margin-bottom: 1rem;
+    color: var(--ink-soft);
+  }
+
+  ul.tries li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  ul.tries strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .demo {
+    margin-top: 1.75rem;
+    padding: 1.75rem;
+    background: var(--accent-soft);
+    border-radius: 10px;
+    transition: background 0.4s ease;
+  }
+
+  .demo p {
+    color: var(--ink);
+    margin-top: 0;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    padding: 0.7rem 1.3rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.3s ease;
+  }
+
+  button:hover { transform: translateY(-1px); }
+  button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <section>
+      <h1>Hello, this is my first website.</h1>
+      <p class="lede">I built this to learn how websites actually work. Nothing here is final — I'm just experimenting.</p>
+    </section>
+
+    <section>
+      <h2>What this page is</h2>
+      <p>It's one file: <code>index.html</code>. Everything you see — the words, the colors, the button below — lives in that single file. Open it in any text editor, change something, save it, and refresh the page to see what happened.</p>
+    </section>
+
+    <section>
+      <h2>A few things worth trying</h2>
+      <ul class="tries">
+        <li><strong>Change the words.</strong> Find the sentence you're reading right now inside the file and rewrite it.</li>
+        <li><strong>Change the color.</strong> Near the top of the file there's a line that says <code>--accent: #3e6259;</code> — swap the code after the colon for any hex color and save.</li>
+        <li><strong>Add a new section.</strong> Copy one of the <code>&lt;section&gt;</code> blocks, paste it below, and change what's inside.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Try it right here</h2>
+      <p>This box changes color when you click the button — a small, safe example of the page reacting to something you do.</p>
+      <div class="demo" id="demoBox">
+        <p id="demoText">Click the button. Watch this box.</p>
+        <button id="demoBtn">Change my color</button>
+      </div>
+    </section>
+
+    <footer>
+      Made while learning. Next step: get this online.
+    </footer>
+  </div>
+
+  <script>
+    const palette = ['#dde6e0', '#e7ded1', '#e0dbe8', '#f0d9d3', '#d9e3ec'];
+    const messages = [
+      'Nice — you just triggered some JavaScript.',
+      'Different color, same page. Try it again.',
+      'Every click runs a tiny bit of code.',
+      'This is what "interactive" means.'
+    ];
+    let i = 0;
+    const box = document.getElementById('demoBox');
+    const text = document.getElementById('demoText');
+    document.getElementById('demoBtn').addEventListener('click', () => {
+      i = (i + 1) % palette.length;
+      box.style.background = palette[i];
+      text.textContent = messages[i % messages.length];
+    });
+  </script>
+</body>
+</html>
