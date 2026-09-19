@@ -1,1061 +1,1309 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>A Little Letter</title>
-
-    <style>
-        /* =========================
-           RESET
-        ========================= */
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* =========================
-           PAGE
-        ========================= */
-
-        body {
-            min-height: 100vh;
-            overflow: hidden;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            font-family: Georgia, serif;
-
-            background:
-                radial-gradient(
-                    circle at 20% 20%,
-                    rgba(191, 205, 190, 0.45),
-                    transparent 35%
-                ),
-                radial-gradient(
-                    circle at 80% 80%,
-                    rgba(190, 185, 220, 0.35),
-                    transparent 35%
-                ),
-                linear-gradient(
-                    135deg,
-                    #dfe8e1,
-                    #e7e2ee,
-                    #dce7ee
-                );
-
-            color: #38433d;
-        }
-
-        /* =========================
-           SOFT BACKGROUND LIGHT
-        ========================= */
-
-        .background-glow {
-            position: fixed;
-            width: 500px;
-            height: 500px;
-
-            border-radius: 50%;
-
-            background: rgba(255, 255, 255, 0.18);
-
-            filter: blur(80px);
-
-            animation: floatGlow 8s ease-in-out infinite alternate;
-
-            pointer-events: none;
-        }
-
-        @keyframes floatGlow {
-            from {
-                transform: translate(-80px, -30px);
-            }
-
-            to {
-                transform: translate(80px, 40px);
-            }
-        }
-
-        /* =========================
-           MAIN SCENE
-        ========================= */
-
-        .scene {
-            width: 100%;
-            height: 100vh;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            position: relative;
-        }
-
-        /* =========================
-           ENVELOPE
-        ========================= */
-
-        .envelope {
-            width: 330px;
-            height: 220px;
-
-            position: relative;
-
-            cursor: pointer;
-
-            animation:
-                swooshIn 1.4s cubic-bezier(.2,.8,.2,1) forwards,
-                gentleFloat 4s ease-in-out 1.4s infinite;
-
-            filter:
-                drop-shadow(0 25px 35px rgba(61, 70, 68, 0.20));
-        }
-
-        @keyframes swooshIn {
-            0% {
-                opacity: 0;
-                transform:
-                    translateX(-120vw)
-                    rotate(-18deg)
-                    scale(0.8);
-            }
-
-            70% {
-                opacity: 1;
-                transform:
-                    translateX(30px)
-                    rotate(3deg)
-                    scale(1.02);
-            }
-
-            100% {
-                opacity: 1;
-                transform:
-                    translateX(0)
-                    rotate(0deg)
-                    scale(1);
-            }
-        }
-
-        @keyframes gentleFloat {
-            0%, 100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-8px);
-            }
-        }
-
-        /* =========================
-           ENVELOPE BODY
-        ========================= */
-
-        .envelope-body {
-            position: absolute;
-            inset: 0;
-
-            border-radius: 14px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    #f3efe4,
-                    #e9e6d9
-                );
-
-            border: 1px solid rgba(255,255,255,0.8);
-
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.9),
-                inset 0 -10px 25px rgba(110, 115, 105, 0.08);
-        }
-
-        /* =========================
-           ENVELOPE FLAP
-        ========================= */
-
-        .flap {
-            position: absolute;
-
-            top: 0;
-            left: 0;
-
-            width: 0;
-            height: 0;
-
-            border-left: 165px solid transparent;
-            border-right: 165px solid transparent;
-            border-top: 120px solid #d6d6c5;
-
-            z-index: 4;
-
-            filter:
-                drop-shadow(
-                    0 2px 2px rgba(0,0,0,0.06)
-                );
-        }
-
-        /* =========================
-           LOWER ENVELOPE FOLDS
-        ========================= */
-
-        .fold-left {
-            position: absolute;
-
-            bottom: 0;
-            left: 0;
-
-            width: 0;
-            height: 0;
-
-            border-top: 110px solid transparent;
-            border-right: 165px solid #dedccc;
-
-            z-index: 3;
-        }
-
-        .fold-right {
-            position: absolute;
-
-            bottom: 0;
-            right: 0;
-
-            width: 0;
-            height: 0;
-
-            border-top: 110px solid transparent;
-            border-left: 165px solid #dedccc;
-
-            z-index: 3;
-        }
-
-        .fold-bottom {
-            position: absolute;
-
-            bottom: 0;
-            left: 0;
-
-            width: 0;
-            height: 0;
-
-            border-left: 165px solid transparent;
-            border-right: 165px solid transparent;
-            border-bottom: 110px solid #d2d2c1;
-
-            z-index: 4;
-        }
-
-        /* =========================
-           LETTER INSIDE ENVELOPE
-        ========================= */
-
-        .hidden-letter {
-            position: absolute;
-
-            left: 50%;
-            top: 18px;
-
-            width: 230px;
-            height: 150px;
-
-            transform:
-                translateX(-50%)
-                translateY(0);
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #fffdf8,
-                    #f7f3ea
-                );
-
-            border-radius: 7px;
-
-            box-shadow:
-                0 8px 25px rgba(75, 80, 72, 0.18);
-
-            z-index: 2;
-
-            transition:
-                transform 0.7s cubic-bezier(.2,.8,.2,1),
-                opacity 0.5s ease;
-        }
-
-        .envelope:hover .hidden-letter {
-            transform:
-                translateX(-50%)
-                translateY(-75px);
-        }
-
-        /* =========================
-           LITTLE SEAL
-        ========================= */
-
-        .seal {
-            position: absolute;
-
-            left: 50%;
-            top: 90px;
-
-            transform: translateX(-50%);
-
-            width: 52px;
-            height: 52px;
-
-            border-radius: 50%;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            background:
-                radial-gradient(
-                    circle,
-                    #b7a7b9,
-                    #9d899f
-                );
-
-            color: #f7f2f7;
-
-            font-size: 21px;
-
-            z-index: 7;
-
-            box-shadow:
-                0 5px 14px rgba(87, 74, 88, 0.25);
-
-            transition:
-                transform 0.25s ease;
-        }
-
-        .envelope:hover .seal {
-            transform:
-                translateX(-50%)
-                scale(1.08);
-        }
-
-        /* =========================
-           CLICK HINT
-        ========================= */
-
-        .hint {
-            position: absolute;
-
-            bottom: -70px;
-
-            width: 100%;
-
-            text-align: center;
-
-            color: #657069;
-
-            font-family:
-                "Trebuchet MS",
-                sans-serif;
-
-            font-size: 14px;
-
-            letter-spacing: 1px;
-
-            opacity: 0;
-
-            animation:
-                fadeHint 1s ease 2s forwards;
-        }
-
-        @keyframes fadeHint {
-            to {
-                opacity: 0.8;
-            }
-        }
-
-        /* =========================
-           PASSWORD MODAL
-        ========================= */
-
-        .password-screen {
-            position: fixed;
-            inset: 0;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            background: rgba(48, 55, 52, 0.28);
-
-            backdrop-filter: blur(12px);
-
-            opacity: 0;
-            visibility: hidden;
-
-            transition:
-                opacity 0.4s ease,
-                visibility 0.4s ease;
-
-            z-index: 50;
-        }
-
-        .password-screen.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .password-box {
-            width: min(390px, 90%);
-
-            padding: 38px;
-
-            text-align: center;
-
-            border-radius: 24px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(249, 248, 241, 0.96),
-                    rgba(237, 238, 229, 0.94)
-                );
-
-            border: 1px solid rgba(255,255,255,0.8);
-
-            box-shadow:
-                0 30px 80px rgba(45, 54, 50, 0.25);
-
-            transform: translateY(25px) scale(0.95);
-
-            transition:
-                transform 0.45s cubic-bezier(.2,.8,.2,1);
-        }
-
-        .password-screen.active .password-box {
-            transform: translateY(0) scale(1);
-        }
-
-        .password-box h2 {
-            margin-bottom: 10px;
-
-            font-size: 27px;
-
-            font-weight: normal;
-
-            color: #4a554e;
-        }
-
-        .password-box p {
-            margin-bottom: 22px;
-
-            color: #7a837d;
-
-            font-family: "Trebuchet MS", sans-serif;
-
-            font-size: 14px;
-        }
-
-        .password-input {
-            width: 100%;
-
-            padding: 14px 16px;
-
-            border-radius: 12px;
-
-            border: 1px solid #c8cec6;
-
-            outline: none;
-
-            background: rgba(255,255,255,0.7);
-
-            color: #465049;
-
-            font-size: 16px;
-
-            transition:
-                border-color 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-
-        .password-input:focus {
-            border-color: #9dabb0;
-
-            box-shadow:
-                0 0 0 4px rgba(157,171,176,0.15);
-        }
-
-        .unlock-button {
-            margin-top: 14px;
-
-            width: 100%;
-
-            padding: 14px;
-
-            border: none;
-
-            border-radius: 12px;
-
-            cursor: pointer;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #9eabb0,
-                    #9d8fa7
-                );
-
-            color: white;
-
-            font-size: 15px;
-
-            letter-spacing: 0.5px;
-
-            transition:
-                transform 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-
-        .unlock-button:hover {
-            transform: translateY(-2px);
-
-            box-shadow:
-                0 10px 22px rgba(94, 99, 103, 0.22);
-        }
-
-        .error {
-            margin-top: 12px;
-
-            color: #9b7070;
-
-            font-family: "Trebuchet MS", sans-serif;
-
-            font-size: 13px;
-
-            opacity: 0;
-
-            transition: opacity 0.2s ease;
-        }
-
-        .error.show {
-            opacity: 1;
-        }
-
-        /* =========================
-           FINAL LETTER
-        ========================= */
-
-        .letter-screen {
-            position: fixed;
-            inset: 0;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            padding: 25px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #dce7e0,
-                    #e9e2eb,
-                    #dce7ee
-                );
-
-            opacity: 0;
-            visibility: hidden;
-
-            transition:
-                opacity 0.7s ease,
-                visibility 0.7s ease;
-
-            z-index: 100;
-        }
-
-        .letter-screen.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .paper {
-            position: relative;
-
-            width: min(650px, 92vw);
-            min-height: 430px;
-
-            padding: 65px 55px;
-
-            border-radius: 6px;
-
-            background:
-                linear-gradient(
-                    rgba(255,255,255,0.55),
-                    rgba(255,255,255,0.55)
-                ),
-                repeating-linear-gradient(
-                    0deg,
-                    #f8f3e7 0px,
-                    #f8f3e7 28px,
-                    #f2ecdf 29px,
-                    #f2ecdf 30px
-                );
-
-            box-shadow:
-                0 35px 90px rgba(55, 63, 59, 0.24);
-
-            border: 1px solid rgba(255,255,255,0.9);
-
-            transform:
-                translateY(50px)
-                rotate(-2deg)
-                scale(0.94);
-
-            transition:
-                transform 0.8s cubic-bezier(.2,.8,.2,1);
-
-            overflow: hidden;
-        }
-
-        .letter-screen.active .paper {
-            transform:
-                translateY(0)
-                rotate(0deg)
-                scale(1);
-        }
-
-        .paper::before {
-            content: "";
-
-            position: absolute;
-
-            width: 170px;
-            height: 170px;
-
-            border-radius: 50%;
-
-            background: rgba(180, 162, 183, 0.12);
-
-            top: -70px;
-            right: -60px;
-
-            filter: blur(5px);
-        }
-
-        .paper::after {
-            content: "";
-
-            position: absolute;
-
-            width: 130px;
-            height: 130px;
-
-            border-radius: 50%;
-
-            background: rgba(156, 177, 163, 0.12);
-
-            bottom: -60px;
-            left: -40px;
-
-            filter: blur(5px);
-        }
-
-        .small-line {
-            text-align: center;
-
-            font-family: "Trebuchet MS", sans-serif;
-
-            color: #9a9d94;
-
-            font-size: 12px;
-
-            letter-spacing: 3px;
-
-            text-transform: uppercase;
-
-            margin-bottom: 36px;
-        }
-
-        .message {
-            text-align: center;
-
-            font-family:
-                "Brush Script MT",
-                "Segoe Script",
-                cursive;
-
-            font-size: clamp(64px, 11vw, 120px);
-
-            font-weight: normal;
-
-            color: #615566;
-
-            transform: rotate(-3deg);
-
-            text-shadow:
-                1px 1px 0 rgba(255,255,255,0.75);
-
-            animation: messageReveal 1.1s ease 0.3s both;
-        }
-
-        @keyframes messageReveal {
-            0% {
-                opacity: 0;
-                transform:
-                    translateY(20px)
-                    rotate(-7deg)
-                    scale(0.9);
-            }
-
-            100% {
-                opacity: 1;
-                transform:
-                    translateY(0)
-                    rotate(-3deg)
-                    scale(1);
-            }
-        }
-
-        .signature {
-            margin-top: 35px;
-
-            text-align: center;
-
-            font-family:
-                "Trebuchet MS",
-                sans-serif;
-
-            color: #8a918b;
-
-            font-size: 13px;
-
-            letter-spacing: 2px;
-        }
-
-        /* =========================
-           CLOSE BUTTON
-        ========================= */
-
-        .close-button {
-            position: absolute;
-
-            top: 24px;
-            right: 24px;
-
-            width: 42px;
-            height: 42px;
-
-            border-radius: 50%;
-
-            border: none;
-
-            cursor: pointer;
-
-            background: rgba(255,255,255,0.55);
-
-            color: #67706a;
-
-            font-size: 20px;
-
-            transition:
-                transform 0.2s ease,
-                background 0.2s ease;
-        }
-
-        .close-button:hover {
-            transform: rotate(90deg);
-
-            background: rgba(255,255,255,0.85);
-        }
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 600px) {
-
-            .envelope {
-                width: 280px;
-                height: 185px;
-            }
-
-            .flap {
-                border-left-width: 140px;
-                border-right-width: 140px;
-                border-top-width: 100px;
-            }
-
-            .fold-left {
-                border-right-width: 140px;
-                border-top-width: 92px;
-            }
-
-            .fold-right {
-                border-left-width: 140px;
-                border-top-width: 92px;
-            }
-
-            .fold-bottom {
-                border-left-width: 140px;
-                border-right-width: 140px;
-                border-bottom-width: 92px;
-            }
-
-            .hidden-letter {
-                width: 195px;
-                height: 125px;
-            }
-
-            .seal {
-                top: 73px;
-            }
-
-            .paper {
-                padding: 55px 25px;
-                min-height: 360px;
-            }
-
-            .message {
-                font-size: 65px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Letters</title>
+  <style>
+    :root{
+      --sky-1:#dff5ff;
+      --sky-2:#b9e2f3;
+      --sky-3:#d7eef7;
+      --ink:#31424b;
+      --muted:#6d818a;
+      --paper:#fbf7ec;
+      --red:#b92835;
+      --red-dark:#8e1e29;
+      --red-light:#d94a54;
+      --sage:#a9c9c5;
+      --line:#d5e7ec;
+      --shadow:0 28px 70px rgba(49,66,75,.18);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{width:100%;height:100%}
+    body{
+      overflow:hidden;
+      font-family: Georgia, "Times New Roman", serif;
+      color:var(--ink);
+      background:var(--sky-1);
+    }
+
+    button,input{font:inherit}
+
+    /* ---------- PAGE / SCENE SYSTEM ---------- */
+    .app{
+      position:relative;
+      width:100vw;
+      height:100vh;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.55), transparent 24%),
+        radial-gradient(circle at 78% 18%, rgba(255,255,255,.42), transparent 20%),
+        linear-gradient(180deg,var(--sky-1),var(--sky-2));
+    }
+
+    .scene{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:transform .9s cubic-bezier(.76,0,.24,1);
+      will-change:transform;
+    }
+
+    .scene.page-two{
+      transform:translateX(100%);
+    }
+
+    .app.show-puzzle .scene.page-one{
+      transform:translateX(-100%);
+    }
+
+    .app.show-puzzle .scene.page-two{
+      transform:translateX(0);
+    }
+
+    .scene.page-one{
+      z-index:2;
+    }
+
+    .scene.page-two{
+      z-index:1;
+      background:
+        radial-gradient(circle at 15% 70%, rgba(255,255,255,.45), transparent 22%),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,.4), transparent 20%),
+        linear-gradient(180deg,#d8eff8,#b7dce9);
+    }
+
+    /* ---------- SKY ---------- */
+    .sky{
+      position:absolute;
+      inset:0;
+      overflow:hidden;
+      pointer-events:none;
+    }
+
+    .cloud{
+      position:absolute;
+      width:180px;height:55px;
+      background:rgba(255,255,255,.48);
+      border-radius:999px;
+      filter:blur(.3px);
+      animation:cloudDrift 28s linear infinite;
+    }
+    .cloud:before,.cloud:after{
+      content:"";
+      position:absolute;
+      background:inherit;
+      border-radius:50%;
+    }
+    .cloud:before{width:72px;height:72px;left:35px;top:-34px}
+    .cloud:after{width:92px;height:92px;right:27px;top:-46px}
+    .cloud.c1{top:13%;left:-220px;animation-duration:36s}
+    .cloud.c2{top:27%;left:-300px;animation-delay:-17s;animation-duration:44s;transform:scale(.8)}
+    .cloud.c3{top:64%;left:-280px;animation-delay:-29s;animation-duration:50s;transform:scale(.65)}
+
+    @keyframes cloudDrift{
+      from{transform:translateX(0)}
+      to{transform:translateX(calc(100vw + 420px))}
+    }
+
+    .bird{
+      position:absolute;
+      width:28px;height:16px;
+      opacity:.45;
+      animation:birdFly 18s linear infinite;
+    }
+    .bird:before,.bird:after{
+      content:"";
+      position:absolute;
+      width:17px;height:8px;
+      border-top:2px solid #5b727d;
+      border-radius:50% 50% 0 0;
+      top:4px;
+    }
+    .bird:before{left:0;transform:rotate(14deg)}
+    .bird:after{right:0;transform:rotate(-14deg)}
+    .bird.b1{top:18%;left:-60px;animation-duration:20s}
+    .bird.b2{top:31%;left:-90px;animation-delay:-6s;animation-duration:23s;transform:scale(.75)}
+    .bird.b3{top:13%;left:-140px;animation-delay:-12s;animation-duration:28s;transform:scale(.6)}
+
+    @keyframes birdFly{
+      from{transform:translateX(0) scale(var(--s,1))}
+      to{transform:translateX(calc(100vw + 260px)) scale(var(--s,1))}
+    }
+
+    /* ---------- PAGE ONE ---------- */
+    .mailbox-wrap{
+      position:relative;
+      width:min(560px,88vw);
+      height:520px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-end;
+      padding-bottom:60px;
+    }
+
+    /* ---------- VINTAGE CYLINDRICAL MAILBOX ---------- */
+    .mailbox{
+      position:relative;
+      width:340px;
+      height:225px;
+      transform:translateX(-120vw) rotate(-16deg) scale(.82);
+      opacity:0;
+      animation:mailboxSwoosh 1.25s cubic-bezier(.2,.83,.23,1) .15s forwards,
+                mailboxFloat 4.2s ease-in-out 1.4s infinite;
+      filter:drop-shadow(0 28px 30px rgba(86,48,51,.2));
+      cursor:pointer;
+    }
+
+    @keyframes mailboxSwoosh{
+      0%{opacity:0;transform:translateX(-120vw) rotate(-16deg) scale(.82)}
+      68%{opacity:1;transform:translateX(35px) rotate(4deg) scale(1.02)}
+      84%{transform:translateX(-10px) rotate(-1.5deg) scale(.995)}
+      100%{opacity:1;transform:translateX(0) rotate(0) scale(1)}
+    }
+
+    @keyframes mailboxFloat{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-7px)}
+    }
+
+    .box{
+      position:absolute;
+      left:0;bottom:18px;
+      width:100%;height:164px;
+      background:linear-gradient(180deg,#d44a55 0%, #bc2936 58%, #9d202b 100%);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.24);
+      box-shadow:
+        inset 0 5px 0 rgba(255,255,255,.10),
+        inset 0 -15px 28px rgba(94,10,20,.14),
+        0 14px 22px rgba(87,34,39,.08);
+      overflow:hidden;
+    }
+
+    .box::after{
+      content:"";
+      position:absolute;
+      left:7%;
+      right:7%;
+      bottom:18px;
+      height:25px;
+      border-radius:50%;
+      background:rgba(70,11,15,.12);
+      filter:blur(1px);
+    }
+
+    /* rounded roof to give the classic cylindrical mailbox silhouette */
+    .box-roof{
+      position:absolute;
+      left:0;right:0;top:0;
+      height:92px;
+      border-radius:170px 170px 30px 30px;
+      background:linear-gradient(180deg,#e35a63,#c8333f);
+      border-bottom:1px solid rgba(112,13,23,.18);
+      box-shadow:inset 0 4px 0 rgba(255,255,255,.12);
+      z-index:2;
+    }
+
+    .box-side-door{
+      position:absolute;
+      left:24px;top:18px;
+      width:106px;height:128px;
+      border-radius:64px 64px 20px 20px;
+      border:5px solid #a32430;
+      background:linear-gradient(145deg,#cf3f4b,#ad2631);
+      box-shadow:inset 0 3px 0 rgba(255,255,255,.08);
+      z-index:3;
+    }
+
+    .box-door-handle{
+      position:absolute;
+      left:67px;top:100px;
+      width:18px;height:18px;
+      border-radius:50%;
+      background:#7f1a24;
+      box-shadow:inset 0 2px 2px rgba(255,255,255,.12);
+      z-index:5;
+    }
+
+    .box-slot{
+      position:absolute;
+      left:144px;top:112px;
+      width:143px;height:12px;
+      border-radius:999px;
+      background:rgba(70,10,15,.25);
+      box-shadow:0 2px 0 rgba(255,255,255,.08);
+      z-index:5;
+    }
+
+    .flag{
+      position:absolute;
+      right:22px;top:4px;
+      width:13px;height:122px;
+      background:#8d1e29;
+      border-radius:8px;
+      transform-origin:bottom center;
+      transform:rotate(-5deg);
+      box-shadow:2px 2px 0 rgba(84,10,17,.12);
+      z-index:8;
+    }
+
+    .flag:before{
+      content:"";
+      position:absolute;
+      top:0;left:-4px;
+      width:54px;height:39px;
+      background:#bf3541;
+      clip-path:polygon(0 0,100% 0,77% 100%,0 100%);
+      border-radius:3px;
+    }
+
+    .post{
+      position:absolute;
+      width:96px;height:76px;
+      bottom:0;
+      background:linear-gradient(180deg,#86a8ad,#6b9198);
+      border-radius:14px 14px 4px 4px;
+      box-shadow:0 18px 25px rgba(70,100,106,.2);
+      z-index:-1;
+    }
+    .post:before,.post:after{
+      content:"";
+      position:absolute;
+      bottom:-13px;
+      width:55px;height:18px;
+      border-radius:50%;
+      background:#6d9298;
+    }
+    .post:before{left:-9px;transform:rotate(-8deg)}
+    .post:after{right:-9px;transform:rotate(8deg)}
+
+    /* leaf-like falling letter */
+    .dropped-letter{
+      position:absolute;
+      left:55%;
+      bottom:128px;
+      width:220px;
+      height:138px;
+      transform:translate(-50%,-240px) rotate(-16deg);
+      opacity:0;
+      background:
+        linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,0)),
+        repeating-linear-gradient(0deg,#fbf7ec 0 27px,#f1eadc 28px 29px);
+      border:1px solid rgba(161,144,120,.25);
+      border-radius:8px;
+      box-shadow:0 15px 30px rgba(64,72,72,.16);
+      z-index:7;
+      cursor:pointer;
+      transition:transform .35s ease, box-shadow .35s ease;
+      animation:letterDrop 1.15s cubic-bezier(.22,.75,.18,1) 1.45s forwards;
+    }
+
+    @keyframes letterDrop{
+      0%{opacity:0;transform:translate(-50%,-270px) rotate(-17deg)}
+      34%{opacity:1;transform:translate(-54%,-120px) rotate(-10deg)}
+      60%{opacity:1;transform:translate(-45%,18px) rotate(10deg)}
+      74%{transform:translate(-54%,-7px) rotate(-7deg)}
+      88%{transform:translate(-47%,8px) rotate(3deg)}
+      100%{opacity:1;transform:translate(-50%,0) rotate(-2deg)}
+    }
+
+    .dropped-letter:hover{
+      transform:translate(-50%,-4px) rotate(-1deg) scale(1.02);
+      box-shadow:0 21px 38px rgba(64,72,72,.2);
+    }
+
+    .dropped-letter .mini-stamp{
+      position:absolute;
+      top:12px;right:13px;
+      width:31px;height:24px;
+      border:1px solid rgba(142,30,41,.35);
+      color:#9b525c;
+      font-size:10px;
+      display:grid;place-items:center;
+      transform:rotate(5deg);
+      background:rgba(255,255,255,.4);
+    }
+
+    .dropped-letter .mini-lines{
+      position:absolute;
+      left:20px;right:20px;bottom:20px;
+      height:54px;
+      background:repeating-linear-gradient(180deg,rgba(94,83,70,.25) 0 1px,transparent 1px 14px);
+    }
+
+    .caption{
+      position:absolute;
+      bottom:0;
+      width:100%;
+      text-align:center;
+      color:rgba(49,66,75,.78);
+      font-size:14px;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      opacity:0;
+      animation:fadeIn 1s ease 2.2s forwards;
+    }
+    @keyframes fadeIn{to{opacity:1}}
+
+
+    /* ---------- PASSWORD MODAL ---------- */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      background:rgba(37,62,71,.24);
+      backdrop-filter:blur(10px);
+      z-index:30;
+      opacity:0;
+      visibility:hidden;
+      transition:.35s ease;
+    }
+    .overlay.active{opacity:1;visibility:visible}
+
+    .modal{
+      width:min(400px,90vw);
+      padding:34px;
+      border-radius:24px;
+      background:rgba(253,250,242,.95);
+      border:1px solid rgba(255,255,255,.9);
+      box-shadow:var(--shadow);
+      transform:translateY(22px) scale(.95);
+      transition:.4s cubic-bezier(.2,.8,.2,1);
+      text-align:center;
+    }
+    .overlay.active .modal{transform:translateY(0) scale(1)}
+    .modal h2{font-size:28px;font-weight:400;margin-bottom:10px}
+    .modal p{color:var(--muted);font-family:Arial,sans-serif;font-size:14px;line-height:1.55;margin-bottom:20px}
+    .modal input{
+      width:100%;
+      padding:13px 15px;
+      border:1px solid #c6d8de;
+      border-radius:12px;
+      background:#fffdfa;
+      outline:none;
+      color:var(--ink);
+    }
+    .modal input:focus{border-color:#8eb2bf;box-shadow:0 0 0 4px rgba(142,178,191,.15)}
+    .btn{
+      margin-top:13px;
+      width:100%;
+      padding:13px 16px;
+      border:none;
+      border-radius:12px;
+      color:white;
+      background:linear-gradient(135deg,#b75b65,#9d3d49);
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .btn:hover{transform:translateY(-2px);box-shadow:0 11px 22px rgba(143,46,57,.18)}
+    .error{margin-top:11px;color:#a45c65;font:13px Arial,sans-serif;opacity:0;transition:.2s}
+    .error.show{opacity:1}
+
+    /* ---------- FIRST REVEALED LETTER ---------- */
+    .full-letter{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:linear-gradient(135deg,#dbeff8,#c8e3ee,#dfeaf1);
+      z-index:25;
+      opacity:0;
+      visibility:hidden;
+      transition:.65s ease;
+    }
+    .full-letter.active{opacity:1;visibility:visible}
+
+    .paper{
+      width:min(700px,92vw);
+      min-height:460px;
+      padding:70px 48px 56px;
+      position:relative;
+      border-radius:8px;
+      background:
+        radial-gradient(circle at 80% 15%,rgba(183,200,190,.17),transparent 18%),
+        radial-gradient(circle at 10% 90%,rgba(163,190,205,.18),transparent 18%),
+        repeating-linear-gradient(0deg,#fcf7eb 0 29px,#f3ece0 30px);
+      box-shadow:0 35px 90px rgba(51,72,82,.2);
+      border:1px solid rgba(255,255,255,.9);
+      transform:translateY(45px) rotate(-2deg) scale(.95);
+      transition:.75s cubic-bezier(.2,.8,.2,1);
+    }
+    .full-letter.active .paper{transform:translateY(0) rotate(0) scale(1)}
+
+    .tiny-label{
+      font:12px Arial,sans-serif;
+      letter-spacing:3px;
+      text-transform:uppercase;
+      color:#8b9ba0;
+      text-align:center;
+      margin-bottom:30px;
+    }
+    .message{
+      text-align:center;
+      font-family:"Brush Script MT","Segoe Script",cursive;
+      font-size:clamp(72px,14vw,150px);
+      color:#5f5363;
+      transform:rotate(-3deg);
+      text-shadow:1px 1px 0 rgba(255,255,255,.8);
+    }
+    .submessage{
+      margin-top:35px;
+      text-align:center;
+      font:13px Arial,sans-serif;
+      letter-spacing:1.5px;
+      color:#8b9799;
+    }
+    .next-btn{
+      position:absolute;
+      right:22px;
+      top:50%;
+      bottom:auto;
+      transform:translateY(-50%);
+      width:50px;height:42px;
+      border:none;border-radius:999px;
+      background:rgba(86,105,111,.12);
+      color:#56686f;
+      font-size:28px;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .next-btn:hover{transform:translateY(-50%) translateX(4px);background:rgba(86,105,111,.18)}
+
+    /* ---------- PUZZLE ---------- */
+    .puzzle-shell{
+      width:min(620px,92vw);
+      text-align:center;
+      z-index:3;
+    }
+    .puzzle-kicker{
+      font:12px Arial,sans-serif;
+      text-transform:uppercase;
+      letter-spacing:3px;
+      color:#71868f;
+      margin-bottom:10px;
+    }
+    .puzzle-title{
+      font-size:42px;
+      font-weight:400;
+      margin-bottom:9px;
+    }
+    .puzzle-sub{
+      color:#6e8088;
+      font:14px Arial,sans-serif;
+      line-height:1.55;
+      margin-bottom:22px;
+    }
+
+    .board{
+      display:grid;
+      grid-template-rows:repeat(5,1fr);
+      gap:8px;
+      width:min(320px,80vw);
+      margin:0 auto 18px;
+    }
+    .row{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:8px;
+    }
+    .tile{
+      aspect-ratio:1;
+      display:grid;
+      place-items:center;
+      border-radius:10px;
+      border:1px solid #c6dce3;
+      background:rgba(255,255,255,.62);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+      font:bold 25px Arial,sans-serif;
+      color:#425760;
+      text-transform:uppercase;
+      transition:transform .25s ease, background .25s ease;
+    }
+    .tile.filled{border-color:#94b8c4;background:rgba(255,255,255,.83)}
+    .tile.correct{background:#9cbcb3;border-color:#86a99e;color:white;transform:rotateX(360deg)}
+    .tile.present{background:#d6c59b;border-color:#c1ae7c;color:white;transform:rotateX(360deg)}
+    .tile.absent{background:#80939b;border-color:#6d8189;color:white;transform:rotateX(360deg)}
+
+    .guess-form{
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      margin-bottom:12px;
+    }
+    .guess-input{
+      width:min(240px,62vw);
+      padding:13px 14px;
+      border:1px solid #bdd4dc;
+      border-radius:12px;
+      background:rgba(255,255,255,.78);
+      outline:none;
+      text-transform:lowercase;
+      color:#425760;
+    }
+    .guess-input:focus{box-shadow:0 0 0 4px rgba(132,169,180,.12);border-color:#8db3bf}
+    .guess-btn{
+      padding:13px 16px;
+      border:none;
+      border-radius:12px;
+      background:#708f99;
+      color:white;
+      cursor:pointer;
+      transition:.2s;
+    }
+    .guess-btn:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(74,100,111,.2)}
+    .status{
+      min-height:20px;
+      font:13px Arial,sans-serif;
+      color:#6c7e85;
+    }
+    .status.good{color:#547d72}
+    .status.bad{color:#a05d64}
+    .solve-letter-btn{
+      display:none;
+      margin:16px auto 0;
+      border:none;
+      background:#a66e79;
+      color:white;
+      border-radius:999px;
+      padding:12px 18px;
+      cursor:pointer;
+    }
+    .solve-letter-btn.show{display:inline-block}
+
+    /* ---------- WORDLE LOSS SCREEN ---------- */
+    .loss-screen{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:rgba(46,72,80,.16);
+      backdrop-filter:blur(8px);
+      z-index:55;
+      opacity:0;
+      visibility:hidden;
+      transition:.5s ease;
+    }
+    .loss-screen.active{opacity:1;visibility:visible}
+    .loss-card{
+      width:min(420px,90vw);
+      padding:38px 28px 30px;
+      border-radius:24px;
+      text-align:center;
+      background:rgba(253,250,242,.97);
+      border:1px solid rgba(255,255,255,.9);
+      box-shadow:var(--shadow);
+      transform:translateY(22px) scale(.95);
+      transition:.45s cubic-bezier(.2,.8,.2,1);
+    }
+    .loss-screen.active .loss-card{transform:translateY(0) scale(1)}
+    .loss-title{
+      font-size:34px;
+      font-weight:400;
+      color:#6d5660;
+      margin-bottom:18px;
+    }
+    .retry-emoji{
+      display:block;
+      border:0;
+      background:transparent;
+      font-size:74px;
+      line-height:1;
+      margin:0 auto 8px;
+      cursor:pointer;
+      transition:transform .22s ease;
+      filter:drop-shadow(0 8px 12px rgba(91,68,76,.12));
+    }
+    .retry-emoji:hover{transform:scale(1.12) rotate(-6deg)}
+    .loss-hint{
+      color:#8a9598;
+      font:11px Arial,sans-serif;
+      text-transform:lowercase;
+      letter-spacing:1.2px;
+    }
+
+
+    /* ---------- SECOND LETTER ENVELOPE ---------- */
+    .mini-letter-stage{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#dbeef6,#c8e4ee,#deedf2);
+      z-index:40;
+      opacity:0;
+      visibility:hidden;
+      transition:.6s ease;
+    }
+    .mini-letter-stage.active{opacity:1;visibility:visible}
+
+    .small-envelope{
+      position:relative;
+      width:min(350px,84vw);
+      height:240px;
+      cursor:pointer;
+      filter:drop-shadow(0 25px 35px rgba(69,80,83,.2));
+    }
+    .se-body{
+      position:absolute;inset:auto 0 0 0;
+      height:185px;
+      border-radius:16px;
+      background:linear-gradient(145deg,#f8f4ea,#ede6d7);
+      border:1px solid rgba(255,255,255,.9);
+      z-index:2;
+    }
+    .se-paper{
+      position:absolute;
+      left:50%;
+      bottom:35px;
+      width:255px;height:165px;
+      transform:translateX(-50%) translateY(0);
+      border-radius:8px;
+      background:repeating-linear-gradient(0deg,#fffdf8 0 27px,#f5efe5 28px);
+      box-shadow:0 9px 22px rgba(70,75,72,.15);
+      z-index:1;
+      transition:transform .55s cubic-bezier(.2,.8,.2,1);
+    }
+    .small-envelope.click1 .se-paper{transform:translateX(-50%) translateY(-28px)}
+    .small-envelope.click2 .se-paper{transform:translateX(-50%) translateY(-62px)}
+    .small-envelope.open .se-paper{transform:translateX(-50%) translateY(-185px)}
+
+    .se-fold-l,.se-fold-r{
+      position:absolute;
+      bottom:0;
+      width:0;height:0;
+      z-index:4;
+    }
+    .se-fold-l{left:0;border-top:105px solid transparent;border-right:175px solid #ddd5c5}
+    .se-fold-r{right:0;border-top:105px solid transparent;border-left:175px solid #ddd5c5}
+    .se-flap{
+      position:absolute;
+      top:0;left:0;right:0;
+      height:120px;
+      background:#d5cdbc;
+      clip-path:polygon(0 0,100% 0,50% 100%);
+      z-index:5;
+      transform-origin:top center;
+      transition:transform .65s cubic-bezier(.2,.8,.2,1);
+    }
+    .small-envelope.click1 .se-flap{transform:rotateX(8deg)}
+    .small-envelope.click2 .se-flap{transform:rotateX(22deg)}
+    .small-envelope.open .se-flap{transform:rotateX(92deg)}
+
+    .se-seal{
+      position:absolute;
+      top:87px;left:50%;
+      transform:translateX(-50%);
+      width:52px;height:52px;border-radius:50%;
+      display:grid;place-items:center;
+      background:#b4939d;color:#fff8f9;
+      box-shadow:0 6px 13px rgba(95,76,84,.22);
+      z-index:7;
+      transition:.4s;
+    }
+    .small-envelope.click1 .se-seal{transform:translateX(-50%) scale(1.04)}
+    .small-envelope.click2 .se-seal{transform:translateX(-50%) scale(1.05) translateY(2px)}
+    .small-envelope.open .se-seal{opacity:0;transform:translateX(-50%) scale(.75)}
+
+    .tiny-hint{
+      position:absolute;
+      bottom:-48px;
+      left:0;right:0;
+      text-align:center;
+      color:#65787f;
+      font:13px Arial,sans-serif;
+      letter-spacing:1.4px;
+    }
+
+    /* revealed final card */
+    .final-card{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:rgba(45,66,74,.18);
+      backdrop-filter:blur(8px);
+      z-index:60;
+      opacity:0;
+      visibility:hidden;
+      transition:.55s ease;
+    }
+    .final-card.active{opacity:1;visibility:visible}
+    .final-paper{
+      width:min(760px,92vw);
+      min-height:470px;
+      padding:64px 50px;
+      border-radius:7px;
+      background:
+        radial-gradient(circle at 82% 15%,rgba(173,194,188,.2),transparent 18%),
+        repeating-linear-gradient(0deg,#fcf8ee 0 30px,#f1eade 31px);
+      box-shadow:0 38px 95px rgba(48,65,72,.25);
+      transform:translateY(40px) rotate(-2deg) scale(.96);
+      transition:.7s cubic-bezier(.2,.8,.2,1);
+      position:relative;
+    }
+    .final-card.active .final-paper{transform:translateY(0) rotate(0) scale(1)}
+    .pangram{
+      font-size:clamp(28px,5vw,44px);
+      line-height:1.45;
+      text-align:center;
+      color:#59676e;
+    }
+    .pangram-note{
+      margin-top:26px;
+      text-align:center;
+      font:12px Arial,sans-serif;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      color:#8a979a;
+    }
+    .close-final{
+      position:absolute;
+      top:18px;right:18px;
+      width:40px;height:40px;
+      border:none;border-radius:50%;
+      background:rgba(89,107,112,.1);
+      color:#62747b;
+      font-size:20px;
+      cursor:pointer;
+    }
+
+    @media (max-width:600px){
+      .mailbox{transform:translateX(-120vw) rotate(-16deg) scale(.7)}
+      .mailbox-wrap{height:470px}
+      .mailbox{width:280px;height:185px}
+      .box{height:142px}
+      .box-side-door{left:20px;top:16px;width:88px;height:112px}
+      .box-door-handle{left:54px;top:85px}
+      .box-slot{left:117px;top:97px;width:116px}
+      .flag{right:16px;height:108px}
+      .dropped-letter{width:200px;height:128px;bottom:112px}
+      .paper{min-height:390px;padding:60px 28px}
+      .message{font-size:74px}
+      .guess-form{flex-direction:column;align-items:center}
+      .guess-input,.guess-btn{width:min(260px,76vw)}
+    }
+  </style>
 </head>
-
 <body>
+  <div class="app" id="app">
 
-    <!-- Background -->
+    <!-- ================= PAGE ONE ================= -->
+    <section class="scene page-one">
+      <div class="sky">
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+        <div class="bird b1"></div>
+        <div class="bird b2"></div>
+        <div class="bird b3"></div>
+      </div>
 
-    <div class="background-glow"></div>
+      <div class="mailbox-wrap">
+        <div class="mailbox" id="mailbox" aria-label="Letter box">
+          <div class="post"></div>
+          <div class="box"></div>
+          <div class="box-roof"></div>
+          <div class="box-side-door"></div>
+          <div class="box-door-handle"></div>
+          <div class="box-slot"></div>
+          <div class="flag"></div>
 
-
-    <!-- Main Scene -->
-
-    <main class="scene">
-
-        <div
-            class="envelope"
-            id="envelope"
-            title="Click the letter"
-        >
-
-            <div class="envelope-body"></div>
-
-            <div class="hidden-letter"></div>
-
-            <div class="flap"></div>
-
-            <div class="fold-left"></div>
-            <div class="fold-right"></div>
-            <div class="fold-bottom"></div>
-
-            <div class="seal">
-                ✦
-            </div>
-
-            <div class="hint">
-                click the letter
-            </div>
-
+          <div class="dropped-letter" id="droppedLetter" title="Open letter">
+            <div class="mini-stamp">✦</div>
+            <div class="mini-lines"></div>
+          </div>
         </div>
 
-    </main>
+        <div class="caption">A little something for you</div>
+      </div>
+    </section>
 
+    <!-- ================= PAGE TWO ================= -->
+    <section class="scene page-two">
+      <div class="sky">
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="bird b1"></div>
+        <div class="bird b3"></div>
+      </div>
 
-    <!-- Password -->
+      <div class="puzzle-shell">
+        <div class="puzzle-kicker">second page</div>
+        <h1 class="puzzle-title">One tiny puzzle</h1>
+        <p class="puzzle-sub">
+          Guess the five-letter word. You have five tries.<br>
+          The answer is a little unusual, but very specific.
+        </p>
 
-    <div
-        class="password-screen"
-        id="passwordScreen"
-    >
+        <div class="board" id="board"></div>
 
-        <div class="password-box">
+        <form class="guess-form" id="guessForm">
+          <input
+            class="guess-input"
+            id="guessInput"
+            type="text"
+            maxlength="5"
+            autocomplete="off"
+            placeholder="type a word"
+            aria-label="Guess a five-letter word"
+          />
+          <button class="guess-btn" type="submit">Guess</button>
+        </form>
 
-            <h2>
-                A little secret
-            </h2>
-
-            <p>
-                Enter the password to open the letter.
-            </p>
-
-            <input
-                type="password"
-                id="passwordInput"
-                class="password-input"
-                placeholder="Password"
-                autocomplete="off"
-            >
-
-            <button
-                class="unlock-button"
-                id="unlockButton"
-            >
-                Unlock letter
-            </button>
-
-            <div
-                class="error"
-                id="error"
-            >
-                That's not the password.
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- Final Letter -->
-
-    <div
-        class="letter-screen"
-        id="letterScreen"
-    >
-
-        <button
-            class="close-button"
-            id="closeButton"
-        >
-            ×
+        <div class="status" id="status">5 guesses remaining.</div>
+        <button class="solve-letter-btn" id="solveLetterBtn">
+          Something new is waiting →
         </button>
+      </div>
+    </section>
 
-        <div class="paper">
-
-            <div class="small-line">
-                a very important message
-            </div>
-
-            <div class="message">
-                fuck u
-            </div>
-
-            <div class="signature">
-                with absolutely no love ♡
-            </div>
-
-        </div>
-
+    <!-- ================= PASSWORD ================= -->
+    <div class="overlay" id="passwordOverlay">
+      <div class="modal">
+        <h2>A little secret</h2>
+        <p>The first letter is locked.<br>Enter the password to unfold it.</p>
+        <input id="passwordInput" type="password" placeholder="password" autocomplete="off" />
+        <button class="btn" id="unlockBtn">Unlock</button>
+        <div class="error" id="passwordError">Not quite. Try again.</div>
+      </div>
     </div>
 
+    <!-- ================= FIRST LETTER ================= -->
+    <div class="full-letter" id="fullLetter">
+      <div class="paper">
+        <div class="tiny-label">a very important message</div>
+        <div class="message">fuck u</div>
+        <div class="submessage">with absolutely no love ♡</div>
+        <button class="next-btn" id="nextBtn" aria-label="Go to next page">→</button>
+      </div>
+    </div>
 
-    <script>
-        /* =========================
-           ELEMENTS
-        ========================= */
+    <!-- ================= WORDLE LOSS ================= -->
+    <div class="loss-screen" id="lossScreen">
+      <div class="loss-card">
+        <div class="loss-title">u dumbass</div>
+        <button class="retry-emoji" id="retryEmoji" aria-label="Try again">😛</button>
+        <div class="loss-hint">click on the emoji to try again</div>
+      </div>
+    </div>
 
-        const envelope =
-            document.getElementById("envelope");
+    <!-- ================= SECOND LETTER ================= -->
+    <div class="mini-letter-stage" id="miniLetterStage">
+      <div class="small-envelope" id="smallEnvelope" title="Click the letter">
+        <div class="se-paper">
+          <div style="padding:26px 22px;color:#8a8e89;font-size:12px;line-height:1.65;">
+            The next page is sealed.<br>
+            Three clicks should do it.
+          </div>
+        </div>
+        <div class="se-body"></div>
+        <div class="se-flap"></div>
+        <div class="se-fold-l"></div>
+        <div class="se-fold-r"></div>
+        <div class="se-seal">✦</div>
+        <div class="tiny-hint">click the letter</div>
+      </div>
+    </div>
 
-        const passwordScreen =
-            document.getElementById("passwordScreen");
+    <!-- ================= FINAL LETTER ================= -->
+    <div class="final-card" id="finalCard">
+      <div class="final-paper">
+        <button class="close-final" id="closeFinal">×</button>
+        <div class="tiny-label">the page after the page</div>
+        <div class="pangram">The quick brown fox jumps over the lazy dog.</div>
+        <div class="pangram-note">every letter of the alphabet, all in one line</div>
+      </div>
+    </div>
+  </div>
 
-        const passwordInput =
-            document.getElementById("passwordInput");
+  <script>
+    /* =========================================================
+       AUDIO — generated in the browser, so you do NOT need
+       to upload MP3 files for this version.
+       ========================================================= */
+    let audioCtx = null;
+    let master = null;
+    let ambientStarted = false;
 
-        const unlockButton =
-            document.getElementById("unlockButton");
+    function initAudio(){
+      if (audioCtx) {
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        return;
+      }
 
-        const error =
-            document.getElementById("error");
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      master = audioCtx.createGain();
+      master.gain.value = 0.06;
+      master.connect(audioCtx.destination);
+    }
 
-        const letterScreen =
-            document.getElementById("letterScreen");
+    function tone(freq, duration=0.14, type="sine", volume=0.05, when=0){
+      initAudio();
+      const t = audioCtx.currentTime + when;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
 
-        const closeButton =
-            document.getElementById("closeButton");
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(Math.max(volume, 0.0002), t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
 
+      osc.connect(gain);
+      gain.connect(master);
 
-        /* =========================
-           CLICK ENVELOPE
-        ========================= */
+      osc.start(t);
+      osc.stop(t + duration + 0.02);
+    }
 
-        envelope.addEventListener("click", () => {
+    function swooshSound(){
+      initAudio();
 
-            passwordScreen.classList.add("active");
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
 
-            setTimeout(() => {
-                passwordInput.focus();
-            }, 350);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(180, t);
+      osc.frequency.exponentialRampToValueAtTime(720, t + 0.45);
 
-        });
+      filter.type = "lowpass";
+      filter.frequency.value = 1800;
 
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.09, t + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
 
-        /* =========================
-           CHECK PASSWORD
-        ========================= */
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(master);
 
-        function checkPassword() {
+      osc.start(t);
+      osc.stop(t + 0.6);
+    }
 
-            const password =
-                passwordInput.value;
+    function paperSound(){
+      tone(620, 0.11, "triangle", 0.045);
+      tone(880, 0.14, "triangle", 0.035, 0.055);
+    }
 
-            if (password === "demo") {
+    function clickSound(){
+      tone(520, 0.07, "sine", 0.04);
+    }
 
-                error.classList.remove("show");
+    function successSound(){
+      tone(523.25, 0.16, "sine", 0.05);
+      tone(659.25, 0.18, "sine", 0.045, 0.09);
+      tone(783.99, 0.28, "sine", 0.04, 0.18);
+    }
 
-                passwordScreen.classList.remove("active");
+    function wrongSound(){
+      tone(220, 0.13, "sawtooth", 0.025);
+      tone(185, 0.18, "sawtooth", 0.02, 0.08);
+    }
 
-                setTimeout(() => {
+    function startAmbient(){
+      if (ambientStarted) return;
+      ambientStarted = true;
 
-                    letterScreen.classList.add("active");
+      initAudio();
 
-                }, 350);
+      const notes = [261.63, 329.63, 392.00, 329.63];
+      let i = 0;
 
-            } else {
+      setInterval(() => {
+        if (!audioCtx || document.hidden) return;
+        tone(notes[i % notes.length], 1.8, "sine", 0.008);
+        i++;
+      }, 1900);
+    }
 
-                error.classList.add("show");
+    /* =========================================================
+       PAGE 1 — mailbox, falling letter, password, reveal
+       ========================================================= */
+    const app = document.getElementById("app");
+    const mailbox = document.getElementById("mailbox");
+    const droppedLetter = document.getElementById("droppedLetter");
+    const passwordOverlay = document.getElementById("passwordOverlay");
+    const passwordInput = document.getElementById("passwordInput");
+    const unlockBtn = document.getElementById("unlockBtn");
+    const passwordError = document.getElementById("passwordError");
+    const fullLetter = document.getElementById("fullLetter");
+    const nextBtn = document.getElementById("nextBtn");
 
-                passwordInput.value = "";
+    window.addEventListener("load", () => {
+      setTimeout(swooshSound, 250);
+      setTimeout(paperSound, 1750);
+    });
 
-                passwordInput.focus();
+    function openPassword(){
+      initAudio();
+      startAmbient();
+      clickSound();
+      passwordOverlay.classList.add("active");
+      setTimeout(() => passwordInput.focus(), 250);
+    }
 
-            }
+    droppedLetter.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openPassword();
+    });
+
+    mailbox.addEventListener("click", (event) => {
+      if (event.target === droppedLetter || droppedLetter.contains(event.target)) return;
+      openPassword();
+    });
+
+    function checkPassword(){
+      const value = passwordInput.value.trim();
+
+      if (value === "demo"){
+        passwordError.classList.remove("show");
+        passwordOverlay.classList.remove("active");
+
+        setTimeout(() => {
+          fullLetter.classList.add("active");
+          successSound();
+        }, 300);
+      } else {
+        wrongSound();
+        passwordError.textContent = "Not quite. Try again.";
+        passwordError.classList.add("show");
+        passwordInput.value = "";
+        passwordInput.focus();
+      }
+    }
+
+    unlockBtn.addEventListener("click", checkPassword);
+
+    passwordInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") checkPassword();
+    });
+
+    /* =========================================================
+       PAGE 2 — Wordle-style puzzle
+       Exact answer: Mells
+       ========================================================= */
+    const TARGET = "MELLS";
+    const MAX_TRIES = 5;
+    let sessionToken = null;
+const board = document.getElementById("board");
+    const guessForm = document.getElementById("guessForm");
+    const guessInput = document.getElementById("guessInput");
+    const status = document.getElementById("status");
+    const solveLetterBtn = document.getElementById("solveLetterBtn");
+
+    let currentRow = 0;
+    let solved = false;
+
+    function makeBoard(){
+      board.innerHTML = "";
+      for (let r = 0; r < MAX_TRIES; r++){
+        const row = document.createElement("div");
+        row.className = "row";
+
+        for (let c = 0; c < 5; c++){
+          const tile = document.createElement("div");
+          tile.className = "tile";
+          row.appendChild(tile);
         }
 
+        board.appendChild(row);
+      }
+    }
 
-        /* =========================
-           BUTTON
-        ========================= */
+    makeBoard();
 
-        unlockButton.addEventListener(
-            "click",
-            checkPassword
-        );
+    function paintStates(guess, rowElement){
+      const targetChars = TARGET.split("");
+      const guessChars = guess.split("");
+      const states = Array(5).fill("absent");
+
+      for (let i = 0; i < 5; i++){
+        if (guessChars[i] === targetChars[i]){
+          states[i] = "correct";
+          targetChars[i] = null;
+          guessChars[i] = null;
+        }
+      }
+
+      for (let i = 0; i < 5; i++){
+        if (guessChars[i] === null) continue;
+
+        const idx = targetChars.indexOf(guessChars[i]);
+        if (idx !== -1){
+          states[i] = "present";
+          targetChars[idx] = null;
+        }
+      }
+
+      rowElement.querySelectorAll(".tile").forEach((tile, i) => {
+        tile.textContent = guess[i];
+        tile.classList.add("filled");
+
+        setTimeout(() => {
+          tile.classList.add(states[i]);
+        }, i * 100);
+      });
+    }
+
+    function submitGuess(){
+      if (solved || currentRow >= MAX_TRIES) return;
+
+      const guess = guessInput.value.trim().toUpperCase();
+
+      if (!/^[A-Z]{5}$/.test(guess)){
+        status.textContent = "Use exactly five letters.";
+        status.className = "status bad";
+        wrongSound();
+        return;
+      }
+
+      const row = board.children[currentRow];
+      paintStates(guess, row);
+      currentRow++;
+
+      if (guess === TARGET){
+        solved = true;
+        status.textContent = "You found it. ✦";
+        status.className = "status good";
+        successSound();
+
+        setTimeout(() => {
+          solveLetterBtn.classList.add("show");
+        }, 600);
+
+        guessInput.disabled = true;
+      } else if (currentRow >= MAX_TRIES){
+        status.textContent = "The five tries are gone.";
+        status.className = "status bad";
+        wrongSound();
+        guessInput.disabled = true;
+
+        setTimeout(() => {
+          lossScreen.classList.add("active");
+        }, 450);
+      } else {
+        const remaining = MAX_TRIES - currentRow;
+        status.textContent = `${remaining} guess${remaining === 1 ? "" : "es"} remaining.`;
+        status.className = "status";
+        wrongSound();
+        guessInput.value = "";
+        guessInput.focus();
+      }
+
+      if (guess === TARGET) {
+        guessInput.value = "";
+      } else if (currentRow >= MAX_TRIES) {
+        guessInput.value = "";
+      }
+    }
+
+    guessForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitGuess();
+    });
+
+    /* =========================================================
+       PAGE TRANSITION + 3-CLICK SECOND LETTER
+       ========================================================= */
+    const miniLetterStage = document.getElementById("miniLetterStage");
+    const smallEnvelope = document.getElementById("smallEnvelope");
+    const finalCard = document.getElementById("finalCard");
+    const closeFinal = document.getElementById("closeFinal");
+
+    nextBtn.addEventListener("click", () => {
+      paperSound();
+      fullLetter.classList.remove("active");
+
+      setTimeout(() => {
+        app.classList.add("show-puzzle");
+        status.textContent = "5 guesses remaining.";
+      }, 150);
+    });
 
 
-        /* =========================
-           ENTER KEY
-        ========================= */
+    function openNextRoundSecurely(){
+      if (!solved){
+        status.textContent = "Solve the puzzle first.";
+        status.className = "status bad";
+        return;
+      }
 
-        passwordInput.addEventListener(
-            "keydown",
-            (event) => {
+      successSound();
 
-                if (event.key === "Enter") {
-                    checkPassword();
-                }
+      miniLetterStage.classList.add("active");
+      smallEnvelope.classList.remove("click1","click2","open");
+      smallEnvelope.dataset.clicks = "0";
+    }
 
-            }
-        );
+    solveLetterBtn.addEventListener("click", openNextRoundSecurely);
+
+    smallEnvelope.addEventListener("click", async () => {
+      initAudio();
+      let clicks = Number(smallEnvelope.dataset.clicks || "0") + 1;
+      smallEnvelope.dataset.clicks = String(clicks);
+
+      clickSound();
+
+      if (clicks === 1){
+        smallEnvelope.classList.add("click1");
+        paperSound();
+      } else if (clicks === 2){
+        smallEnvelope.classList.remove("click1");
+        smallEnvelope.classList.add("click2");
+        paperSound();
+      } else if (clicks >= 3){
+        smallEnvelope.classList.remove("click2");
+        smallEnvelope.classList.add("open");
+        successSound();
+
+        setTimeout(() => {
+          miniLetterStage.classList.remove("active");
+          finalCard.classList.add("active");
+        }, 700);
+      }
+    });
 
 
-        /* =========================
-           CLOSE LETTER
-        ========================= */
+    closeFinal.addEventListener("click", () => {
+      finalCard.classList.remove("active");
+    });
 
-        closeButton.addEventListener(
-            "click",
-            () => {
+    /* =========================================================
+       RETRY AFTER LOSING WORDLE
+       ========================================================= */
+    const lossScreen = document.getElementById("lossScreen");
+    const retryEmoji = document.getElementById("retryEmoji");
 
-                letterScreen.classList.remove("active");
+    function resetWordle(){
+      currentRow = 0;
+      solved = false;
+      guessInput.disabled = false;
+      guessInput.value = "";
+      status.textContent = "5 guesses remaining.";
+      status.className = "status";
+      solveLetterBtn.classList.remove("show");
+      makeBoard();
+      lossScreen.classList.remove("active");
+      setTimeout(() => guessInput.focus(), 250);
+      clickSound();
+    }
 
-            }
-        );
-
-    </script>
-
+    retryEmoji.addEventListener("click", resetWordle);
+  </script>
 </body>
 </html>
